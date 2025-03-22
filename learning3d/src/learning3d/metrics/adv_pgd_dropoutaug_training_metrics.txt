@@ -1,0 +1,5 @@
+Total Training Time: 828.57 seconds
+==================================================
+Best Test Loss: 1.4140
+Best Test Accuracy: 0.5879
+Best Epoch: 17

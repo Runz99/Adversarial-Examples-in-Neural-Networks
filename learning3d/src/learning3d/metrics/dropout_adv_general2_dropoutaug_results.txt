@@ -1,0 +1,2 @@
+Attack Duration: 9.0850 seconds
+Adversarial Accuracy (Dropout Attack): 0.4789

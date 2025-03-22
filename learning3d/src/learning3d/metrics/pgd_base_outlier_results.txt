@@ -1,0 +1,2 @@
+Attack Duration (PGD Attack): 40.2312 seconds
+Adversarial Accuracy (PGD Attack with Outlier Removal): 0.0553

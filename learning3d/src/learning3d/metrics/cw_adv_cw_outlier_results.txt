@@ -1,0 +1,2 @@
+Attack Duration: 725.1733 seconds
+Adversarial Accuracy (C&W Attack with Outlier Defence): 0.0374

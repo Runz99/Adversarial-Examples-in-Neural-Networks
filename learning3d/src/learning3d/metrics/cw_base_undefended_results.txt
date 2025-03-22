@@ -1,0 +1,2 @@
+Attack Duration: 1320.1511 seconds
+Adversarial Accuracy (C&W Attack): 0.0268

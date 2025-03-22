@@ -1,0 +1,2 @@
+Attack Duration (PGD Attack): 40.1717 seconds
+Adversarial Accuracy (PGD Attack with randomized smoothing): 0.0353
