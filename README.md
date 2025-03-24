@@ -7,3 +7,5 @@ In this project, I have evaluated existing different defence strategies on the f
 - Computational overhead
 
 I have used the PointNet model implementation from the learning3d repository by @vinits5 to perform my experiments. More specifically, I have used the train_pointnet.py file found in the learning3d/examples folder and modified it to fit my project requirements.
+
+[to be updated more]
