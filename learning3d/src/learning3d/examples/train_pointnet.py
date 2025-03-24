@@ -63,22 +63,7 @@ def generate_pgd_adversarial(model, points, targets, device, eps=0.1, alpha=0.02
     return adv_points
 
 def generate_pgd_max_loss(model, points, targets, device, eps=0.1, alpha=0.02, steps=7, k=5):
-    """
-    Generates multiple PGD adversarial examples and selects the one that maximizes loss.
-    
-    Args:
-        model: The classification model.
-        points: Input point cloud batch.
-        targets: True labels.
-        device: CUDA or CPU.
-        eps: Maximum perturbation size.
-        alpha: Step size.
-        steps: Number of attack iterations.
-        k: Number of different PGD samples to generate.
 
-    Returns:
-        The adversarial example with the highest loss.
-    """
     model.eval()  # Set model to evaluation mode
     attack = torchattacks.PGD(model, eps=eps, alpha=alpha, steps=steps, random_start=True)
     
@@ -97,7 +82,7 @@ def generate_pgd_max_loss(model, points, targets, device, eps=0.1, alpha=0.02, s
             worst_adv_points = adv_points.clone().detach()
 
     model.train()  # Switch model back to training mode
-    return worst_adv_points  # Return the worst adversarial example
+    return worst_adv_points 
 
 def pgd_attack(model, test_loader, device, eps=0.1, alpha=0.02, steps=40):
 	
@@ -108,10 +93,10 @@ def pgd_attack(model, test_loader, device, eps=0.1, alpha=0.02, steps=40):
 	for points, targets in test_loader:
 		points, targets = points.to(device), targets.to(device)
 
-		# ✅ Generate adversarial examples
+		# Generate adversarial examples
 		adv_points = attack(points, targets)
 
-		# ✅ Make predictions on adversarial samples
+		# Make predictions on adversarial samples
 		outputs = model(adv_points)
 		_, preds = outputs.max(1)
 
@@ -139,10 +124,10 @@ def cw_attack(model, test_loader, device, c=1, kappa=0, steps=1000, lr=0.01):
     for points, targets in test_loader:
         points, targets = points.to(device), targets.to(device)
 
-        # ✅ Generate adversarial examples using C&W
+        # Generate adversarial examples using C&W
         adv_points = attack(points, targets)
 
-        # ✅ Make predictions on adversarial samples
+        # Make predictions on adversarial samples
         outputs = model(adv_points)
         _, preds = outputs.max(1)
 
@@ -153,8 +138,6 @@ def cw_attack(model, test_loader, device, c=1, kappa=0, steps=1000, lr=0.01):
     return adv_accuracy
 
 def dropout_attack(model, test_loader, device, drop_ratio=0.5):
-    """Applies Dropout Attack by selectively removing important points from the point cloud."""
-
     model.eval()
     total, correct = 0, 0
 
@@ -164,18 +147,18 @@ def dropout_attack(model, test_loader, device, drop_ratio=0.5):
         num_points = points.shape[1]  # Number of points per point cloud
         num_drop = int(num_points * drop_ratio)  # Number of points to remove
 
-        # ✅ Compute per-point variance across dimensions
-        std_dev = torch.std(points, dim=0)  # Shape: [num_points, 3]
+        # Compute per-point variance across dimensions
+        std_dev = torch.std(points, dim=0) 
         importance = std_dev.mean(dim=-1)  # Mean importance across dimensions
 
-        # ✅ Select the most important points to drop
+        # Select the most important points to drop
         _, drop_indices = torch.topk(importance, num_drop)  # Get indices of highest-variance points
         keep_indices = torch.tensor([i for i in range(num_points) if i not in drop_indices], device=device)
 
-        # ✅ Apply dropout
+        # Apply dropout
         adv_points = torch.index_select(points, 1, keep_indices)  # Keep only selected points
 
-        # ✅ Make predictions on modified point clouds
+        # Make predictions on modified point clouds
         outputs = model(adv_points)
         _, preds = outputs.max(1)
 
@@ -186,25 +169,23 @@ def dropout_attack(model, test_loader, device, drop_ratio=0.5):
     return adv_accuracy
 
 def outlier_removal(points, threshold=1.5):
-    """Removes outliers using a statistical approach based on point distances."""
-    batch_size, num_points, _ = points.shape
     
     # Compute mean and standard deviation along each dimension
-    mean = torch.mean(points, dim=1, keepdim=True)  # Shape: [B, 1, 3]
-    std = torch.std(points, dim=1, keepdim=True)  # Shape: [B, 1, 3]
+    mean = torch.mean(points, dim=1, keepdim=True)  
+    std = torch.std(points, dim=1, keepdim=True)  
     
     # Compute z-score (distance from mean in terms of standard deviation)
-    z_scores = torch.abs((points - mean) / (std + 1e-6))  # Avoid division by zero
+    z_scores = torch.abs((points - mean) / (std + 1e-6))  
     
     # Identify inliers (points within threshold * std deviations)
-    mask = (z_scores < threshold).all(dim=-1)  # Shape: [B, N]
+    mask = (z_scores < threshold).all(dim=-1)  
     
     # Keep only inlier points (replace outliers with mean value)
     filtered_points = torch.where(mask.unsqueeze(-1), points, mean)
     return filtered_points
 
 def randomized_smoothing(points, sigma=0.05):
-    """Applies Gaussian noise to each point for Randomized Smoothing defense."""
+    # Applies Gaussian noise to each point for Randomized Smoothing defence 
     noise = torch.normal(mean=0, std=sigma, size=points.shape, device=points.device)
     return points + noise
 
@@ -385,15 +366,15 @@ def train_one_epoch(device, model, train_loader, optimizer, adv_training=False, 
 	train_loss = 0.0
 	pred  = 0.0
 	count = 0
-	# start_time = time.time()
+
 	for i, data in enumerate(tqdm(train_loader)):
 		points, target = data
 		target = target.squeeze().long()
 		
 		num_classes = 33  
 		if torch.any(target < 0) or torch.any(target >= num_classes):
-			print(f"❌ ERROR: Found invalid labels in batch {i}! Unique labels: {torch.unique(target)}")
-			exit(1)  # Stop execution to debug the issue
+			print(f"ERROR: Found invalid labels in batch {i}! Unique labels: {torch.unique(target)}")
+			exit(1)  # Stop execution 
 
 		points = points.to(device)
 		target = target.to(device)
