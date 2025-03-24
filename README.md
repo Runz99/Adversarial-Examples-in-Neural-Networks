@@ -6,6 +6,6 @@ In this project, I have evaluated existing different defence strategies on the f
 - Robustness Gain
 - Computational overhead
 
-I have used the PointNet model implementation from the learning3d repository by @vinits5 to perform my experiments. More specifically, I have used the train_pointnet.py file found in the learning3d/examples folder and modified it to fit my project requirements.
+I have used the PointNet model implementation from the [learning3d](https://github.com/vinits5/learning3d) repository by [@vinits5](https://github.com/vinits5) to perform my experiments. More specifically, I have used the train_pointnet.py file found in the learning3d/examples folder and modified it to fit my project requirements.
 
 [to be updated more]
